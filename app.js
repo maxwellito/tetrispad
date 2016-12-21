@@ -62,6 +62,40 @@ class Launchpad {
         throw new Error(`Device ${this.deviceName} not found.`)
       })
   }
+
+  /* Commands **********************************/
+
+  /**
+   * Reset the launchpad by setting all LEDs
+   * to off
+   */
+  reset () {
+    this.output.send([176, 0, 0])
+  }
+
+  /**
+   * Set all LEDs on with a level of brightness
+   * @param  {string} brightness Brightness level (low/medium/high)
+   */
+  full (brightness) {
+    let brightnessMap = {
+      low: 125,
+      medium: 126,
+      high: 127
+    }
+    this.output.send([176, 0, brightnessMap[brightness]])
+  }
+
+  /**
+   * Set all LEDs in a batch by providing
+   * all the values in a array
+   * @param  {array} input RAW values
+   */
+  batch (input) {
+    for (var i = 0; i < input.length; i++) {
+      this.output.send([146, input[i++], input[i++]])
+    }
+  }
 }
 
   //
