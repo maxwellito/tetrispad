@@ -3,7 +3,8 @@ class Grid {
     this.launchpad = launchpad
     this.width     = width
     this.height    = height
-    this.data      = []
+
+    this.clear(Launchpad.LED_OFF)
     this.bufferUpdates = []
   }
 
@@ -15,14 +16,23 @@ class Grid {
     return this
   }
 
-  clear(color) {}
+  clear(color) {
+    this.data = new Array(this.width * this.height)
+    this.data.fill(color)
+    this.launchpad.clear(color)
+  }
+  
   reverse() {}
   setData(array) {}
 
   render () {
-    let cmd
-    for (let i = 0; i < this.bufferUpdates.length; i++) {
+    let cmd,
+        keysUpdated = []
+    for (let i = this.bufferUpdates.length - 1; i >= 0; i++) {
       cmd = this.bufferUpdates[i]
+      if (!~keysUpdated.indexOf(cmd[0]))
+        continue
+      keysUpdated.push(cmd[0])
       this.setKey(this.indexToKey(cmd[0]), cmd[1])
       this.data[cmd[0]] = cmd[1]
     }
