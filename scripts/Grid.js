@@ -21,7 +21,15 @@ class Grid {
     this.data.fill(color)
     this.launchpad.clear(color)
   }
-  
+
+  isLineOff (lineIndex) {
+    for (let i = 0; i < this.width; i++) {
+      if (this.data[lineIndex * this.width + i] === Launchpad.KEY_OFF)
+        return true
+    }
+    return false
+  }
+
   reverse() {}
   setData(array) {}
 
