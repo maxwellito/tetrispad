@@ -83,7 +83,16 @@ class Game {
         return this.waitNextFrame(this.interval / 4)
       })
       .then(() => {
-        this.grid
+        var newData = Array.from(this.grid.data)
+        lineIndexes
+          .reverse()
+          .forEach(function (lineIndex) {
+            newData.splice(lineIndex * this.grid.width, this.grid.width)
+          })
+        var offset = new Array(lineIndexes.length * this.grid.width)
+        offset.fill(Launchpad.LED_OFF)
+        this.grid.setData(offset.concat(newData))
+        this.play()
       })
 
   }

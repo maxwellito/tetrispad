@@ -95,6 +95,11 @@ class Launchpad {
     for (var i = 0; i < input.length; i++) {
       this.output.send([146, input[i++], input[i++]])
     }
+    this.data = input
+  }
+
+  setKey (key, value) {
+    this.output.send([144, key, value])
   }
 }
 

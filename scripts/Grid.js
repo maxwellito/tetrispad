@@ -31,7 +31,9 @@ class Grid {
   }
 
   reverse() {}
-  setData(array) {}
+  setData (data) {
+    this.launchpad.batch(data)
+  }
 
   render () {
     let cmd,
@@ -41,7 +43,7 @@ class Grid {
       if (!~keysUpdated.indexOf(cmd[0]))
         continue
       keysUpdated.push(cmd[0])
-      this.setKey(this.indexToKey(cmd[0]), cmd[1])
+      this.grid.setKey(this.indexToKey(cmd[0]), cmd[1])
       this.data[cmd[0]] = cmd[1]
     }
     this.bufferUpdates = []
