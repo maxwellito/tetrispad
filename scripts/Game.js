@@ -102,6 +102,8 @@ class Game {
     let block = this.currentBlock,
         isSuccess = false
 
+    this.setPattern(Launchpad.LED_OFF)
+
     switch (direction) {
     case 'down':
       if (isSuccess = this.doesPatternFit(block.pattern, block.x, block.y + 1))
@@ -115,6 +117,14 @@ class Game {
       if (isSuccess = this.doesPatternFit(block.pattern, block.x + 1, block.y))
         block.x++
       break
+    }
+
+    if (isSuccess) {
+      this.setPattern(block.color)
+      this.grid.render()
+    }
+    else {
+      this.grid.clearBuffer()
     }
 
     return isSuccess

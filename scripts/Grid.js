@@ -5,6 +5,10 @@ class Grid {
     this.height    = height
 
     this.clear(Launchpad.LED_OFF)
+    this.clearBuffer()
+  }
+
+  clearBuffer () {
     this.bufferUpdates = []
   }
 
@@ -46,7 +50,7 @@ class Grid {
       this.grid.setKey(this.indexToKey(cmd[0]), cmd[1])
       this.data[cmd[0]] = cmd[1]
     }
-    this.bufferUpdates = []
+    this.clearBuffer()
     return this
   }
 
