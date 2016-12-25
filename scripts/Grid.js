@@ -53,4 +53,18 @@ class Grid {
   indexToKey (index) {
     return Math.floor(index / this.width) * 16 + (index % this.width)
   }
+
+  getBinaryData () {
+    return this.data.map(i => i !== Launchapd.LED_OFF)
+  }
+
+  getSplittedBinaryData () {
+    var output = []
+    this.getBinaryData().forEach((val, index) => {
+      let line = Math.floor(index/this.width)
+      output[line] = output[line] || []
+      output[line].push(val)
+    })
+    return output
+  }
 }

@@ -4,9 +4,11 @@ class Game {
     this.controller = controller
     this.interval = interval
 
-    this.currentPiece = null
+    this.currentBlock = null
+    this.currentGrid = this.grid.getSplittedBinaryData()
 
     this.controller.onKey(this.keyListener.bind(this))
+    this.pickNewBlock()
   }
 
   start () {
@@ -41,9 +43,8 @@ class Game {
   }
 
   increment () {
-    if (this.move('down')) {
+    if (this.move('down'))
       return
-    }
     this.cleanUp()
   }
 
@@ -57,13 +58,10 @@ class Game {
   }
 
   blinkAndClearLines (lineIndexes) {
-    if (!lineIndexes.length) {
+    if (!lineIndexes.length)
       return
-    }
+
     this.pause()
-
-
-
     this
       .waitNextFrame(this.interval / 4)
       .then(() => {
@@ -92,9 +90,96 @@ class Game {
         var offset = new Array(lineIndexes.length * this.grid.width)
         offset.fill(Launchpad.LED_OFF)
         this.grid.setData(offset.concat(newData))
+        this.currentGrid = this.grid.getSplittedBinaryData()
+        this.pickNewBlock()
         this.play()
       })
 
+  }
+
+
+  moveBlock (direction) {
+    let block = this.currentBlock,
+        isSuccess = false
+
+    switch (direction) {
+    case 'down':
+      if (isSuccess = this.doesPatternFit(block.pattern, block.x, block.y + 1))
+        block.y++
+      break
+    case 'left':
+      if (isSuccess = this.doesPatternFit(block.pattern, block.x - 1, block.y))
+        block.x--
+      break
+    case 'right':
+      if (isSuccess = this.doesPatternFit(block.pattern, block.x + 1, block.y))
+        block.x++
+      break
+    }
+
+    return isSuccess
+  }
+
+  pickNewBlock () {
+    this.currentBlock = this.getRandomBlocks()
+    this.currentBlock.posX = 8 - Math.floor(this.currentBlock.pattern[0].length / 2)
+    this.currentBlock.poxY = 0
+  }
+
+  doesPatternFit (pattern, x, y) {
+    if (x < 0 || (x + pattern[0].length) >= 8 || y < 0 || (y + pattern.length) >= 8)
+      return false
+
+    for (let yIndex = 0; yIndex < pattern.length; yIndex++) {
+      for (let xIndex = 0; xIndex < pattern[0].length; xIndex++) {
+        if (pattern[yIndex][xIndex] && this.currentGrid[y + yIndex][x + xIndex])
+          return false
+      }
+    }
+    return true
+  }
+
+  setPattern (color) {
+    for (let yIndex = 0; yIndex < this.currentBlock.pattern.length; yIndex++) {
+      for (let xIndex = 0; xIndex < this.currentBlock.pattern[0].length; xIndex++) {
+        if (this.currentBlock.pattern[yIndex][xIndex])
+          this.updatePixel(this.currentBlock.x + xOffset, this.currentBlock.y + yOffset, color)
+      }
+    }
+  }
+
+  getRandomBlocks () {
+    var blocks = [
+      {
+        color: Launchpad.LED_YELLOW,
+        pattern:[
+          [1, 1, 1],
+          [1, 0, 0]
+        ]
+      },
+      {
+        color: Launchpad.LED_RED_FULL,
+        pattern:[
+          [1, 1],
+          [1, 1]
+        ]
+      },
+      {
+        color: Launchpad.LED_AMBER_FULL,
+        pattern:[
+          [0, 1, 1],
+          [1, 1, 0]
+        ]
+      },
+      {
+        color: Launchpad.LED_YELLOW,
+        pattern:[
+          [1, 1, 1],
+          [0, 1, 0]
+        ]
+      }
+    ]
+    return blocks[Math.floor(Math.random() * blocks.length)]
   }
 
   setLines (lineIndexes, key) {
@@ -111,42 +196,4 @@ class Game {
     })
   }
 
-
-
-
-
-
-
 }
-
-
-Game.blocks = [
-  {
-    color: Launchpad.LED_YELLOW,
-    pattern:[
-      [1, 1, 1],
-      [1, 0, 0]
-    ]
-  },
-  {
-    color: Launchpad.LED_RED_FULL,
-    pattern:[
-      [1, 1],
-      [1, 1]
-    ]
-  },
-  {
-    color: Launchpad.LED_AMBER_FULL,
-    pattern:[
-      [0, 1, 1],
-      [1, 1, 0]
-    ]
-  },
-  {
-    color: Launchpad.LED_YELLOW,
-    pattern:[
-      [1, 1, 1],
-      [0, 1, 0]
-    ]
-  }
-]
