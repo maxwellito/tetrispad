@@ -1,14 +1,14 @@
 class Controller {
   constructor () {
-    this.listerners = []
+    this.listeners = []
     this.key = null
 
     window.addEventListener('keydown', e => {
       if (e.keyCode === this.key)
         return
       this.key = e.keyCode
-      this.listerners.forEach(listener => {
-        listener || listener({
+      this.listeners.forEach(listener => {
+        listener && listener({
           move: Controller.KEYS[this.key]
         })
       })
@@ -19,8 +19,8 @@ class Controller {
   }
 
   onKey (listener) {
-    var listenerIndex = this.listener.length
-    this.listerners.push(listener)
+    var listenerIndex = this.listeners.length
+    this.listeners.push(listener)
 
     return function () {
       this.listeners[listenerIndex] = null

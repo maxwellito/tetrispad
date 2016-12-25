@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>MashupRx</title>
+    <title>TetrisPad</title>
     <link rel="stylesheet" href="style.css"/>
   </head>
 
@@ -8,8 +8,20 @@
 
   <!-- Le scripts -->
   <script src="scripts/Launchpad.js"></script>
+  <script src="scripts/Grid.js"></script>
+  <script src="scripts/Game.js"></script>
+  <script src="scripts/Controller.js"></script>
   <script>
-    var myLaunchpad = new Launchpad()
-    myLaunchpad.accessDevice()
+    var myLaunchpad = new Launchpad(),
+        theGame
+    myLaunchpad
+      .accessDevice()
+      .then(() => {
+        theGame = new Game(
+          new Grid(myLaunchpad, 8, 8),
+          new Controller(),
+          600
+        )
+      })
   </script>
 </html>

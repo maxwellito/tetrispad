@@ -7,22 +7,22 @@ class Game {
     this.currentBlock = null
     this.currentGrid = this.grid.getSplittedBinaryData()
 
-    this.controller.onKey(this.keyListener.bind(this))
-    this.pickNewBlock()
   }
 
   start () {
     this.grid.clear(Launchpad.LED_OFF)
+    this.pickNewBlock()
+    this.controller.onKey(this.keyListener.bind(this))
     this.play()
   }
 
   keyListener (e) {
     switch (true) {
-    case e.move:
+    case !!e.move:
       return this.moveBlock(e.move)
-    case e.rotate:
+    case !!e.rotate:
       return this.rotateBlock(e.rotate)
-    case e.pause:
+    case !!e.pause:
       return this.pause()
     }
   }
@@ -43,7 +43,7 @@ class Game {
   }
 
   increment () {
-    if (this.move('down'))
+    if (this.moveBlock('down'))
       return
     this.cleanUp()
   }
@@ -51,50 +51,57 @@ class Game {
   cleanUp () {
     var completeLines = []
     for (let line = 0; line < this.grid.height; line++) {
-      if (this.gris.isLineOff(line))
+      if (this.grid.isLineOn(line))
         completeLines.push(line)
     }
     this.blinkAndClearLines(completeLines)
   }
 
   blinkAndClearLines (lineIndexes) {
-    if (!lineIndexes.length)
+    if (!lineIndexes.length) {
+      this.next()
       return
+    }
 
     this.pause()
     this
       .waitNextFrame(this.interval / 4)
       .then(() => {
-        this.setLines(lineIndexes, launchpad.LED_GREEN_FULL)
+        this.setLines(lineIndexes, Launchpad.LED_GREEN_FULL)
         return this.waitNextFrame(this.interval / 4)
       })
       .then(() => {
-        this.setLines(lineIndexes, launchpad.LED_YELLOW)
+        this.setLines(lineIndexes, Launchpad.LED_YELLOW)
         return this.waitNextFrame(this.interval / 4)
       })
       .then(() => {
-        this.setLines(lineIndexes, launchpad.LED_AMBER_FULL)
+        this.setLines(lineIndexes, Launchpad.LED_AMBER_FULL)
         return this.waitNextFrame(this.interval / 4)
       })
       .then(() => {
-        this.setLines(lineIndexes, launchpad.LED_RED_FULL)
+        this.setLines(lineIndexes, Launchpad.LED_RED_FULL)
         return this.waitNextFrame(this.interval / 4)
       })
       .then(() => {
         var newData = Array.from(this.grid.data)
         lineIndexes
           .reverse()
-          .forEach(function (lineIndex) {
+          .forEach(lineIndex => {
             newData.splice(lineIndex * this.grid.width, this.grid.width)
           })
         var offset = new Array(lineIndexes.length * this.grid.width)
         offset.fill(Launchpad.LED_OFF)
         this.grid.setData(offset.concat(newData))
-        this.currentGrid = this.grid.getSplittedBinaryData()
-        this.pickNewBlock()
+        this.next()
         this.play()
       })
 
+  }
+
+  next () {
+    this.currentGrid = this.grid.getSplittedBinaryData()
+    console.table(this.currentGrid)
+    this.pickNewBlock()
   }
 
 
@@ -132,12 +139,14 @@ class Game {
 
   pickNewBlock () {
     this.currentBlock = this.getRandomBlocks()
-    this.currentBlock.posX = 8 - Math.floor(this.currentBlock.pattern[0].length / 2)
-    this.currentBlock.poxY = 0
+    this.currentBlock.x = Math.floor((8 - this.currentBlock.pattern[0].length) / 2)
+    this.currentBlock.y = 0
+    this.setPattern(this.currentBlock.color)
+    this.grid.render()
   }
 
   doesPatternFit (pattern, x, y) {
-    if (x < 0 || (x + pattern[0].length) >= 8 || y < 0 || (y + pattern.length) >= 8)
+    if (x < 0 || (x + pattern[0].length) > 8 || y < 0 || (y + pattern.length) > 8)
       return false
 
     for (let yIndex = 0; yIndex < pattern.length; yIndex++) {
@@ -153,7 +162,7 @@ class Game {
     for (let yIndex = 0; yIndex < this.currentBlock.pattern.length; yIndex++) {
       for (let xIndex = 0; xIndex < this.currentBlock.pattern[0].length; xIndex++) {
         if (this.currentBlock.pattern[yIndex][xIndex])
-          this.updatePixel(this.currentBlock.x + xOffset, this.currentBlock.y + yOffset, color)
+          this.grid.updatePixel(this.currentBlock.x + xIndex, this.currentBlock.y + yIndex, color)
       }
     }
   }
@@ -182,7 +191,7 @@ class Game {
         ]
       },
       {
-        color: Launchpad.LED_YELLOW,
+        color: Launchpad.LED_GREEN_FULL,
         pattern:[
           [1, 1, 1],
           [0, 1, 0]
@@ -195,14 +204,15 @@ class Game {
   setLines (lineIndexes, key) {
     lineIndexes.forEach(lineIndex => {
       for (let i = 0; i < this.grid.width; i++)
-        this.grid.setKey(lineIndex * this.grid.width + i, key)
+        // this.grid.setKey(lineIndex * this.grid.width + i, key)
+        this.grid.updatePixel(i, lineIndex, key)
     })
     this.grid.render()
   }
 
-  waitNextFrame () {
-    return new Promise(function (resolve) {
-      setTimeout(function () {resolve()}, this.interval)
+  waitNextFrame (interval = this.interval) {
+    return new Promise(resolve => {
+      setTimeout(function () {resolve()}, interval)
     })
   }
 

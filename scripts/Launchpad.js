@@ -92,7 +92,7 @@ class Launchpad {
    * @param  {array} input RAW values
    */
   batch (input) {
-    for (var i = 0; i < input.length; i++) {
+    for (var i = 0; i < input.length;) {
       this.output.send([146, input[i++], input[i++]])
     }
     this.data = input

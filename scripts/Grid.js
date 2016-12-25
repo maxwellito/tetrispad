@@ -4,7 +4,7 @@ class Grid {
     this.width     = width
     this.height    = height
 
-    this.clear(Launchpad.LED_OFF)
+    this.clear()
     this.clearBuffer()
   }
 
@@ -14,40 +14,40 @@ class Grid {
 
   updatePixel(x, y, color) {
     let index = y * this.width + x
-    if (this.data[index] !== color) {
-      this.bufferUpdates.push([index, color])
-    }
+    this.bufferUpdates.push([index, color])
     return this
   }
 
-  clear(color) {
+  clear() {
     this.data = new Array(this.width * this.height)
-    this.data.fill(color)
-    this.launchpad.clear(color)
+    this.data.fill(Launchpad.LED_OFF)
+    this.launchpad.reset()
   }
 
-  isLineOff (lineIndex) {
+  isLineOn (lineIndex) {
     for (let i = 0; i < this.width; i++) {
-      if (this.data[lineIndex * this.width + i] === Launchpad.KEY_OFF)
-        return true
+      if (this.data[lineIndex * this.width + i] === Launchpad.LED_OFF)
+        return false
     }
-    return false
+    return true
   }
 
   reverse() {}
   setData (data) {
     this.launchpad.batch(data)
+    this.clearBuffer()
+    this.data = data
   }
 
   render () {
     let cmd,
         keysUpdated = []
-    for (let i = this.bufferUpdates.length - 1; i >= 0; i++) {
+    for (let i = this.bufferUpdates.length - 1; i >= 0; i--) {
       cmd = this.bufferUpdates[i]
-      if (!~keysUpdated.indexOf(cmd[0]))
+      if (~keysUpdated.indexOf(cmd[0]))
         continue
       keysUpdated.push(cmd[0])
-      this.grid.setKey(this.indexToKey(cmd[0]), cmd[1])
+      this.launchpad.setKey(this.indexToKey(cmd[0]), cmd[1])
       this.data[cmd[0]] = cmd[1]
     }
     this.clearBuffer()
@@ -59,7 +59,7 @@ class Grid {
   }
 
   getBinaryData () {
-    return this.data.map(i => i !== Launchapd.LED_OFF)
+    return this.data.map(i => i !== Launchpad.LED_OFF)
   }
 
   getSplittedBinaryData () {
