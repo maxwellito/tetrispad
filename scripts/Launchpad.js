@@ -105,11 +105,14 @@ class Launchpad {
 
 Launchpad.LED_OFF        = 0b001100
 Launchpad.LED_RED_LOW    = 0b001101
+Launchpad.LED_RED_MED    = 0b001110
 Launchpad.LED_RED_FULL   = 0b001111
 Launchpad.LED_AMBER_LOW  = 0b011101
+Launchpad.LED_AMBER_MED  = 0b101110
 Launchpad.LED_AMBER_FULL = 0b111111
 Launchpad.LED_YELLOW     = 0b111110
 Launchpad.LED_GREEN_LOW  = 0b011100
+Launchpad.LED_GREEN_MED  = 0b101100
 Launchpad.LED_GREEN_FULL = 0b111100
 
   //
