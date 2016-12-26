@@ -100,7 +100,6 @@ class Game {
 
   next () {
     this.currentGrid = this.grid.getSplittedBinaryData()
-    console.table(this.currentGrid)
     this.pickNewBlock()
   }
 
@@ -137,6 +136,46 @@ class Game {
     return isSuccess
   }
 
+  rotateBlock (direction) {
+    let block = this.currentBlock,
+        newPattern = []
+
+    switch (direction) {
+    case 'right':
+      for (let x = block.pattern[0].length - 1; x >= 0; x--) {
+        let row = []
+        for (let y = 0; y < block.pattern.length; y++) {
+          row.push(block.pattern[y][x])
+        }
+        newPattern.push(row)
+      }
+      break
+    case 'left':
+      for (let x = 0; x < block.pattern[0].length; x++) {
+        let row = []
+        for (let y = block.pattern.length - 1; y >= 0; y--) {
+          row.push(block.pattern[y][x])
+        }
+        newPattern.push(row)
+      }
+      break
+    }
+
+    if (newPattern && this.doesPatternFit(newPattern, block.x, block.y)) {
+      this.setPattern(Launchpad.LED_OFF)
+      block.pattern = newPattern
+      this.setPattern(block.color)
+      this.grid.render()
+      return true
+    }
+    else {
+      return false
+    }
+  }
+
+
+
+
   pickNewBlock () {
     this.currentBlock = this.getRandomBlocks()
     this.currentBlock.x = Math.floor((8 - this.currentBlock.pattern[0].length) / 2)
@@ -170,7 +209,7 @@ class Game {
   getRandomBlocks () {
     var blocks = [
       {
-        color: Launchpad.LED_YELLOW,
+        color: Launchpad.LED_RED_FULL,
         pattern:[
           [1, 1, 1],
           [1, 0, 0]
@@ -179,12 +218,19 @@ class Game {
       {
         color: Launchpad.LED_RED_FULL,
         pattern:[
+          [1, 1, 1],
+          [0, 0, 1]
+        ]
+      },
+      {
+        color: Launchpad.LED_YELLOW,
+        pattern:[
           [1, 1],
           [1, 1]
         ]
       },
       {
-        color: Launchpad.LED_AMBER_FULL,
+        color: Launchpad.LED_GREEN_FULL,
         pattern:[
           [0, 1, 1],
           [1, 1, 0]
@@ -192,6 +238,13 @@ class Game {
       },
       {
         color: Launchpad.LED_GREEN_FULL,
+        pattern:[
+          [1, 1, 0],
+          [0, 1, 1]
+        ]
+      },
+      {
+        color: Launchpad.LED_AMBER_FULL,
         pattern:[
           [1, 1, 1],
           [0, 1, 0]

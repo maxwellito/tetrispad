@@ -8,9 +8,7 @@ class Controller {
         return
       this.key = e.keyCode
       this.listeners.forEach(listener => {
-        listener && listener({
-          move: Controller.KEYS[this.key]
-        })
+        listener && listener(Controller.KEYS[this.key])
       })
     })
     window.addEventListener('keyup', e => {
@@ -29,8 +27,11 @@ class Controller {
 }
 
 Controller.KEYS = {
-  37: 'left',
-  38: 'up',
-  39: 'right',
-  40: 'down'
+  37: {move: 'left'},
+  38: {move: 'up'},
+  39: {move: 'right'},
+  40: {move: 'down'},
+  65: {rotate: 'left'},
+  83: {rotate: 'right'},
+  32: {pause: true}
 }
