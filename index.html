@@ -4,24 +4,44 @@
     <link rel="stylesheet" href="style.css"/>
   </head>
 
-  <body></body>
+  <body>
+    <h2 id="prompt"></h2>
 
-  <!-- Le scripts -->
-  <script src="scripts/Launchpad.js"></script>
-  <script src="scripts/Grid.js"></script>
-  <script src="scripts/Game.js"></script>
-  <script src="scripts/Controller.js"></script>
-  <script>
-    var myLaunchpad = new Launchpad(),
-        theGame
-    myLaunchpad
-      .accessDevice()
-      .then(() => {
-        theGame = new Game(
-          new Grid(myLaunchpad, 8, 8),
-          new Controller(),
-          600
-        )
-      })
-  </script>
+    <!-- Le scripts -->
+    <script src="scripts/Launchpad.js"></script>
+    <script src="scripts/Grid.js"></script>
+    <script src="scripts/Game.js"></script>
+    <script src="scripts/Controller.js"></script>
+    <script>
+      var myLaunchpad = new Launchpad(),
+          myController = new Controller(),
+          prompt = document.getElementById('prompt'),
+          theGame
+
+      myLaunchpad
+        .accessDevice()
+        .then(() => {
+          theGame = new Game(
+            new Grid(myLaunchpad, 8, 8),
+            myController,
+            800
+          )
+          prompt.textContent = 'Press enter to start'
+          myController.onKey(e => {
+            if (e.start)
+              theGame.start()
+              prompt.textContent = 'GO!'
+          })
+        },
+        () => {
+          prompt.textContent = 'Cannot find your Launchpad. Please plug it and refresh.'
+        })
+    </script>
+
+    <style>
+      html {
+        font-family: 'Andale Mono',monospace;
+      }
+    </style>
+  </body>
 </html>

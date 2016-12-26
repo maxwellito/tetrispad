@@ -33,5 +33,6 @@ Controller.KEYS = {
   40: {move: 'down'},
   65: {rotate: 'left'},
   83: {rotate: 'right'},
-  32: {pause: true}
+  32: {pause: true},
+  13: {start: true}
 }
