@@ -8,7 +8,7 @@ class Controller {
         return
       this.key = e.keyCode
       this.listeners.forEach(listener => {
-        listener && listener(Controller.KEYS[this.key])
+        listener && Controller.KEYS[this.key] && listener(Controller.KEYS[this.key])
       })
     })
     window.addEventListener('keyup', e => {
