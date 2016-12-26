@@ -230,6 +230,12 @@ class Game {
         ]
       },
       {
+        color: Launchpad.LED_YELLOW,
+        pattern:[
+          [1, 1, 1, 1]
+        ]
+      },
+      {
         color: Launchpad.LED_GREEN_FULL,
         pattern:[
           [0, 1, 1],
