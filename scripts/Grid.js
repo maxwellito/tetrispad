@@ -1,5 +1,5 @@
 class Grid {
-  constructor (launchpad, width, height) {
+  constructor (launchpad, width = 8, height = 8) {
     this.launchpad = launchpad
     this.width     = width
     this.height    = height

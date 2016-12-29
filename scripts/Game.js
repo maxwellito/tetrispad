@@ -4,6 +4,9 @@ class Game {
     this.controller = controller
     this.interval = interval
 
+    this.countPreviousMove = null
+    this.countCurrentMove = 0
+
     this.currentBlock = null
     this.currentGrid = this.grid.getSplittedBinaryData()
 
@@ -42,6 +45,26 @@ class Game {
     this.timer = null
   }
 
+  end () {
+    this.pause()
+
+    var countdown = 8;
+    var liner = () => {
+      countdown--
+      if (countdown < 0)
+        return
+
+      return this
+        .waitNextFrame(this.interval / 8)
+        .then(() => {
+          this.setLines([countdown], Launchpad.LED_RED_FULL)
+          return liner()
+        })
+    }
+    liner()
+
+  }
+
   increment () {
     if (this.moveBlock('down'))
       return
@@ -49,6 +72,12 @@ class Game {
   }
 
   cleanUp () {
+    if (this.countCurrentMove === 0 && this.countPreviousMove === 0)
+      return this.end()
+
+    this.countPreviousMove = this.countCurrentMove
+    this.countCurrentMove = 0
+
     var completeLines = []
     for (let line = 0; line < this.grid.height; line++) {
       if (this.grid.isLineOn(line))
@@ -126,6 +155,7 @@ class Game {
     }
 
     if (isSuccess) {
+      this.countCurrentMove++
       this.setPattern(block.color)
       this.grid.render()
     }
