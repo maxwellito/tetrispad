@@ -96,6 +96,7 @@ class Launchpad {
       this.output.send([146, input[i++], input[i++]])
     }
     this.data = input
+    this.setKey(0, input[0])
   }
 
   setKey (key, value) {

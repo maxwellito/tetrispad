@@ -8,7 +8,7 @@ The interface is quite basic, the code even more. Some improvement will follow.
 
 - `←`, `↑`, `→`, `↓`: Move the current block
 - `a`, `s`: Rotate the current block
-- `spacebar`: Pause the game (not implemented yet)
+- `spacebar`: Pause the game
 
 ## Code structure
 

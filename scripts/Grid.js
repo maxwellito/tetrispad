@@ -71,4 +71,23 @@ class Grid {
     })
     return output
   }
+
+  suspendDisplay () {
+    var o = Launchpad.LED_OFF,
+        g = Launchpad.LED_GREEN_FULL
+    this.launchpad.batch([
+      o,o,o,o,o,o,o,o,
+      o,g,o,g,o,o,o,o,
+      o,g,o,g,o,o,o,o,
+      o,g,o,g,o,o,o,o,
+      o,o,o,o,o,o,o,o,
+      o,o,o,o,o,o,o,o,
+      o,o,o,o,o,o,o,o,
+      o,o,o,o,o,o,o,o,
+    ])
+  }
+
+  resumeDisplay () {
+    this.launchpad.batch(this.data)
+  }
 }

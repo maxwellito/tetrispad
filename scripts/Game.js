@@ -40,13 +40,24 @@ class Game {
     }, this.interval)
   }
 
-  pause () {
+  stop () {
     clearInterval(this.timer)
     this.timer = null
   }
 
+  pause () {
+    if (this.timer) {
+      this.stop()
+      this.grid.suspendDisplay()
+    }
+    else {
+      this.play()
+      this.grid.resumeDisplay()
+    }
+  }
+
   end () {
-    this.pause()
+    this.stop()
 
     var countdown = 8;
     var liner = () => {
@@ -55,7 +66,7 @@ class Game {
         return
 
       return this
-        .waitNextFrame(this.interval / 8)
+        .waitNextFrame(this.interval / 16)
         .then(() => {
           this.setLines([countdown], Launchpad.LED_RED_FULL)
           return liner()
@@ -92,9 +103,9 @@ class Game {
       return
     }
 
-    this.pause()
+    this.stop()
     this
-      .waitNextFrame(this.interval / 4)
+      .waitNextFrame(this.interval / 8)
       .then(() => {
         this.setLines(lineIndexes, Launchpad.LED_GREEN_FULL)
         return this.waitNextFrame(this.interval / 4)
