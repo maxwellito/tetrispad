@@ -1,8 +1,17 @@
+/**
+ * Controller class
+ * Wrapper to listen to keyboard events and
+ * dispatch formatted events for the Game
+ * class
+ */
 class Controller {
   constructor () {
     this.listeners = []
     this.key = null
 
+    // Listener for keydown event
+    // The formatted event is dispatched only
+    // the key is valid
     window.addEventListener('keydown', e => {
       if (e.keyCode === this.key)
         return
@@ -11,11 +20,19 @@ class Controller {
         listener && Controller.KEYS[this.key] && listener(Controller.KEYS[this.key])
       })
     })
+    // Prevent infinite keydown event on a key
+    // This listener force a key to be released before
+    // being listened again
     window.addEventListener('keyup', e => {
       this.key = null
     })
   }
 
+  /**
+   * Method to start listening on a key event
+   * @param  {function} listener Listener to call
+   * @return {function}          Function to stop listening
+   */
   onKey (listener) {
     var listenerIndex = this.listeners.length
     this.listeners.push(listener)
@@ -26,6 +43,10 @@ class Controller {
   }
 }
 
+/**
+ * List of accept keys and their event data
+ * @type {Object}
+ */
 Controller.KEYS = {
   37: {move: 'left'},
   38: {move: 'up'},

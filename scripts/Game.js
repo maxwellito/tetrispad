@@ -1,4 +1,18 @@
+/**
+ * Game class
+ * The Tetris game.
+ * It takes input from a Controller object
+ * and manipulate a Grid object to display
+ * the game state.
+ */
 class Game {
+
+  /**
+   * Init
+   * @param  {Grid} grid             Grid to output
+   * @param  {Controller} controller Command input
+   * @param  {Number} interval       Interval between actions in ms
+   */
   constructor (grid, controller, interval) {
     this.grid = grid
     this.controller = controller
@@ -9,9 +23,15 @@ class Game {
 
     this.currentBlock = null
     this.currentGrid = this.grid.getSplittedBinaryData()
-
   }
 
+  /**
+   * Public controls
+   */
+
+  /**
+   * Start the game
+   */
   start () {
     this.grid.clear(Launchpad.LED_OFF)
     this.pickNewBlock()
@@ -19,32 +39,9 @@ class Game {
     this.play()
   }
 
-  keyListener (e) {
-    switch (true) {
-    case !!e.move:
-      return this.moveBlock(e.move)
-    case !!e.rotate:
-      return this.rotateBlock(e.rotate)
-    case !!e.pause:
-      return this.pause()
-    }
-  }
-
-
-  play () {
-    if (this.timer) {
-      return
-    }
-    this.timer = setInterval(() => {
-      this.increment()
-    }, this.interval)
-  }
-
-  stop () {
-    clearInterval(this.timer)
-    this.timer = null
-  }
-
+  /**
+   * Pause/resume the game
+   */
   pause () {
     if (this.timer) {
       this.stop()
@@ -56,6 +53,11 @@ class Game {
     }
   }
 
+  /**
+   * End the game
+   * It clear the interval and display the
+   * animation of end.
+   */
   end () {
     this.stop()
 
@@ -73,15 +75,66 @@ class Game {
         })
     }
     liner()
-
   }
 
+  /**
+   * Internal
+   */
+
+  /**
+   * Start the interval
+   */
+  play () {
+    if (this.timer) {
+      return
+    }
+    this.timer = setInterval(() => {
+      this.increment()
+    }, this.interval)
+  }
+
+  /**
+   * Stop the interval
+   */
+  stop () {
+    clearInterval(this.timer)
+    this.timer = null
+  }
+
+
+  /**
+   * Script executed in every interval.
+   * If the current block can't be moved to step
+   * down, the script will execute the method
+   * for the end of block and move on to the next one
+   */
   increment () {
     if (this.moveBlock('down'))
       return
     this.cleanUp()
   }
 
+  /**
+   * Listener for the controller
+   * @param  {Object} e Command to execute
+   */
+  keyListener (e) {
+    switch (true) {
+    case !!e.move:
+      return this.moveBlock(e.move)
+    case !!e.rotate:
+      return this.rotateBlock(e.rotate)
+    case !!e.pause:
+      return this.pause()
+    }
+  }
+
+  /**
+   * Step between new blocks.
+   * It make sure the last two block moved,
+   * otherwise it's the end of the game.
+   * It checks for complete lines to clean.
+   */
   cleanUp () {
     if (this.countCurrentMove === 0 && this.countPreviousMove === 0)
       return this.end()
@@ -97,12 +150,20 @@ class Game {
     this.blinkAndClearLines(completeLines)
   }
 
+  /**
+   * Put the game on pause and clean up
+   * the line indexes provided in parameter.
+   * @param  {Array} lineIndexes Array of line indexes to clean
+   */
   blinkAndClearLines (lineIndexes) {
+    // If no line to clean up, lest load the next block
     if (!lineIndexes.length) {
       this.next()
       return
     }
 
+    // Stop the interval, time to animate the complete
+    // lines and and resume the interval
     this.stop()
     this
       .waitNextFrame(this.interval / 8)
@@ -123,6 +184,7 @@ class Game {
         return this.waitNextFrame(this.interval / 4)
       })
       .then(() => {
+        // Clean up the Grid data to remove the complete lines
         var newData = Array.from(this.grid.data)
         lineIndexes
           .reverse()
@@ -132,18 +194,32 @@ class Game {
         var offset = new Array(lineIndexes.length * this.grid.width)
         offset.fill(Launchpad.LED_OFF)
         this.grid.setData(offset.concat(newData))
+
+        // Load next block and resume the interval
         this.next()
         this.play()
       })
-
   }
 
+  /**
+   * Method use to freeze the current grid and load
+   * the next block
+   */
   next () {
     this.currentGrid = this.grid.getSplittedBinaryData()
     this.pickNewBlock()
   }
 
+  /**
+   * Block manipulation
+   */
 
+  /**
+   * Move the current block to the direction provided
+   * in parameter.
+   * @param  {String} direction Direction : 'left', 'right', 'down'
+   * @return {Boolean}          If the move was possible and successful
+   */
   moveBlock (direction) {
     let block = this.currentBlock,
         isSuccess = false
@@ -177,6 +253,12 @@ class Game {
     return isSuccess
   }
 
+  /**
+   * Rotate the current block to the direction provided
+   * in parameter.
+   * @param  {String} direction Direction : 'left', 'right', 'down'
+   * @return {Boolean}          If the move was possible and successful
+   */
   rotateBlock (direction) {
     let block = this.currentBlock,
         newPattern = []
@@ -214,17 +296,14 @@ class Game {
     }
   }
 
-
-
-
-  pickNewBlock () {
-    this.currentBlock = this.getRandomBlocks()
-    this.currentBlock.x = Math.floor((8 - this.currentBlock.pattern[0].length) / 2)
-    this.currentBlock.y = 0
-    this.setPattern(this.currentBlock.color)
-    this.grid.render()
-  }
-
+  /**
+   * Checks if a block(:pattern) can fit on a
+   * certain position
+   * @param  {Array}  pattern Block pattern
+   * @param  {Number} x       Position X
+   * @param  {Number} y       Position Y
+   * @return {Boolean}        Positive if it fits
+   */
   doesPatternFit (pattern, x, y) {
     if (x < 0 || (x + pattern[0].length) > 8 || y < 0 || (y + pattern.length) > 8)
       return false
@@ -238,6 +317,11 @@ class Game {
     return true
   }
 
+  /**
+   * Apply the current block to the grid with
+   * the color provided
+   * @param {Number} color Launchpad velocity value
+   */
   setPattern (color) {
     for (let yIndex = 0; yIndex < this.currentBlock.pattern.length; yIndex++) {
       for (let xIndex = 0; xIndex < this.currentBlock.pattern[0].length; xIndex++) {
@@ -247,6 +331,28 @@ class Game {
     }
   }
 
+  /**
+   * Blocks
+   */
+
+  /**
+   * Pick a new block as currentBlock
+   * and set it's position
+   */
+  pickNewBlock () {
+    this.currentBlock = this.getRandomBlocks()
+    this.currentBlock.x = Math.floor((8 - this.currentBlock.pattern[0].length) / 2)
+    this.currentBlock.y = 0
+    this.setPattern(this.currentBlock.color)
+    this.grid.render()
+  }
+
+  /**
+   * Get a random block
+   * A block is an object defining the pattern
+   * and the color of it
+   * @return {Object}
+   */
   getRandomBlocks () {
     var blocks = [
       {
@@ -301,19 +407,32 @@ class Game {
     return blocks[Math.floor(Math.random() * blocks.length)]
   }
 
-  setLines (lineIndexes, key) {
+  /**
+   * Utils
+   */
+
+  /**
+   * Set a line to the color requested
+   * @param {Number} lineIndexes Line inder to fill
+   * @param {Number} color       Launchpad velocity value
+   */
+  setLines (lineIndexes, color) {
     lineIndexes.forEach(lineIndex => {
       for (let i = 0; i < this.grid.width; i++)
-        // this.grid.setKey(lineIndex * this.grid.width + i, key)
-        this.grid.updatePixel(i, lineIndex, key)
+        this.grid.updatePixel(i, lineIndex, color)
     })
     this.grid.render()
   }
 
+  /**
+   * Return promise that will be resolved in the
+   * duration provided as parameter
+   * @param  {Number}  interval Duration in ms
+   * @return {Promise}
+   */
   waitNextFrame (interval = this.interval) {
     return new Promise(resolve => {
       setTimeout(function () {resolve()}, interval)
     })
   }
-
 }

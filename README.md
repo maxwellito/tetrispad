@@ -1,6 +1,6 @@
 # TetrisPad
 
-Single page app using the WebMIDI API to use the Novation Launchpad as a screen for a Tetris.
+Single page app using the WebMIDI API to use the [Novation Launchpad](https://global.novationmusic.com/launch/launchpad-mini) as a screen for a Tetris.
 
 The interface is quite basic, the code even more. Some improvement will follow.
 

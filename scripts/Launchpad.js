@@ -1,18 +1,30 @@
 /**
- * Manage access to Launchpad
+ * Launchpad class
+ * Manage access and interact with
+ * the Launchpad
  *
+ * Once connected, the instance will have the property
+ * `input` and `output` filled with MIDI interface to
+ * communicate with the device.
  *
- * connection    : "closed"
- * id            : "-1814679681"
- * manufacturer  : "AKAI PROFESSIONAL,LP"
- * name          : "MPK mini"
- * onstatechange : null
- * state         : "connected"
- * type          : "output"
- * version       : ""
+ * Example
+ * myLaunchpad.input.onmidimessage = function (e) {
+ *    console.log(e.data)
+ *    // [144, 49, 127]
+ * }
+ * myLaunchpad.output.send([144, 49, Launchpad.LED_YELLOW])
  */
 class Launchpad {
-  constructor (deviceName = 'Launchpad Mini') {
+
+  /**
+   * The constructor take only the device name
+   * to catch, in our case the 'Launchpad Mini'.
+   * However this value can be change for other
+   * devices like the original 'Launchpad'
+   * @param  {[type]} deviceName 'Launchpad Mini' [description]
+   * @return {[type]}            [description]
+   */
+  constructor (deviceName = 'Launchpad') {
     this.deviceName = deviceName
     this.input = null
     this.output = null
@@ -50,8 +62,8 @@ class Launchpad {
         for (i = 0; i < inputs.length; i++) {
           input = inputs[i]
           output = outputs[i]
-          if (input.type === 'input'  && input.name === this.deviceName &&
-              output.type === 'output' && output.name === this.deviceName) {
+          if (input.type === 'input'  && ~input.name.indexOf(this.deviceName) &&
+              output.type === 'output' && ~output.name.indexOf(this.deviceName)) {
             this.input  = input
             this.output = output
             return this
@@ -75,7 +87,9 @@ class Launchpad {
 
   /**
    * Set all LEDs on with a level of brightness
-   * @param  {string} brightness Brightness level (low/medium/high)
+   * By default, if the value is not set or invalid
+   * it will set the value to high.
+   * @param  {string} brightness Brightness level ('low'/'medium'/'high')
    */
   full (brightness) {
     let brightnessMap = {
@@ -83,7 +97,7 @@ class Launchpad {
       medium: 126,
       high: 127
     }
-    this.output.send([176, 0, brightnessMap[brightness]])
+    this.output.send([176, 0, brightnessMap[brightness] || brightnessMap.high])
   }
 
   /**
@@ -99,11 +113,21 @@ class Launchpad {
     this.setKey(0, input[0])
   }
 
+  /**
+   * Set the velocity value for a key
+   * @param {number} key   Key number to set
+   * @param {number} value Velocity value to set
+   */
   setKey (key, value) {
     this.output.send([144, key, value])
   }
 }
 
+/**
+ * Keys constants
+ * Velocity values used for set LED keys
+ * @type {Number}
+ */
 Launchpad.LED_OFF        = 0b001100
 Launchpad.LED_RED_LOW    = 0b001101
 Launchpad.LED_RED_MED    = 0b001110
@@ -115,11 +139,3 @@ Launchpad.LED_YELLOW     = 0b111110
 Launchpad.LED_GREEN_LOW  = 0b011100
 Launchpad.LED_GREEN_MED  = 0b101100
 Launchpad.LED_GREEN_FULL = 0b111100
-
-  //
-  //
-  //
-  //
-  // device.input.onmidimessage = function (e) {
-  //   midiListener(e, device, index)
-  // }
