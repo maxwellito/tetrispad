@@ -4,7 +4,24 @@
   </head>
 
   <body>
-    <h2 id="prompt"></h2>
+    <div class="intro">
+      <h2>Tetrispad</h2>
+      <h3>Give a break to your Launchpad, play Tetris with it.</h3>
+      <img src="assets/launchpad.svg" alt="">
+    </div>
+    <div class="info">
+      <h2 class="prompt" id="prompt"></h2>
+      <div>
+        <h3>Controls</h3>
+        <p><span class="pre" style="background: #ed5000;">Keys</span>, <span class="pre">←</span>, <span class="pre">→</span>, <span class="pre">↓</span><br/>Move the current block</p>
+        <p><span class="pre" style="background: #22ff33;">Keys</span>, <span class="pre">a</span>, <span class="pre">s</span><br/>Rotate the current block</p>
+        <p><span class="pre">Any other Launchpad key</span>, <span class="pre">spacebar</span><br/>Pause the game</p>
+      </div>
+      <div>
+        <p><small>This experiment require a modern browser, like Chrome.</small></p>
+      </div>
+    </div>
+
 
     <!-- Le scripts -->
     <script src="scripts/Launchpad.js"></script>
@@ -20,6 +37,7 @@
       myLaunchpad
         .accessDevice()
         .then(() => {
+          myController.addLaunchpad(myLaunchpad)
           theGame = new Game(
             new Grid(myLaunchpad, 8, 8),
             myController,
@@ -38,9 +56,45 @@
     </script>
 
     <style>
-      html {
+      html, body {
         font-family: 'Andale Mono', monospace;
+        margin: 0;
+        padding: 0;
+        background: #21252B;
+        color: #fff;
       }
+      body {
+        display: flex;
+        max-width: 1000px;
+      }
+      p {
+        line-height: 1.5;
+      }
+      .pre {
+        background-color: #3c424e;
+        padding: 0 .25em .25em;
+        border-radius: 2px;
+      }
+
+      .intro, .info {
+        margin: 1rem;
+      }
+      .intro img {
+        width: 50%;
+      }
+      .prompt {
+        color: #21252B;
+        background-color: #fff;
+        padding: .5em;
+      }
+
+      @media (max-width: 680px) {
+        body {
+          flex-direction: column;
+        }
+      }
+
+
     </style>
   </body>
 </html>

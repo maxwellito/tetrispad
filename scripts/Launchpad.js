@@ -28,6 +28,7 @@ class Launchpad {
     this.deviceName = deviceName
     this.input = null
     this.output = null
+    this.listeners = []
   }
 
   /**
@@ -66,6 +67,11 @@ class Launchpad {
               output.type === 'output' && ~output.name.indexOf(this.deviceName)) {
             this.input  = input
             this.output = output
+            this.input.onmidimessage = e => {
+              this.listeners.forEach(listener => {
+                listener && listener(e.data)
+              })
+            }
             return this
           }
         }
@@ -121,6 +127,24 @@ class Launchpad {
   setKey (key, value) {
     this.output.send([144, key, value])
   }
+
+  /**
+   * Events
+   */
+
+   /**
+    * Method to listening on a message event
+    * @param  {function} listener Listener to call
+    * @return {function}          Function to stop listening
+    */
+   onMessage (listener) {
+     var listenerIndex = this.listeners.length
+     this.listeners.push(listener)
+
+     return function () {
+       this.listeners[listenerIndex] = null
+     }
+   }
 }
 
 /**

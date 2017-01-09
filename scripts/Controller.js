@@ -41,6 +41,23 @@ class Controller {
       this.listeners[listenerIndex] = null
     }
   }
+
+  /**
+   * Add listen a launchpad for messages
+   * @param {[type]} launchpad [description]
+   */
+  addLaunchpad (launchpad) {
+    launchpad.onMessage(data => {
+      console.log(data)
+      if (!data[2]) {
+        return
+      }
+      var key = Controller.LAUNCHPAD_KEYS[data[1]] || {pause: true}
+      this.listeners.forEach(listener => {
+        listener && listener(key)
+      })
+    })
+  }
 }
 
 /**
@@ -56,4 +73,12 @@ Controller.KEYS = {
   83: {rotate: 'right'},
   32: {pause: true},
   13: {start: true}
+}
+
+Controller.LAUNCHPAD_KEYS = {
+  112: {move: 'left'},
+  114: {move: 'down'},
+  113: {move: 'right'},
+  118: {rotate: 'left'},
+  119: {rotate: 'right'}
 }
