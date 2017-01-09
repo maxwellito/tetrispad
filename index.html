@@ -1,6 +1,8 @@
-<html onerror="document.getElementById('prompt').textContent = 'Ouch! Your browser is not compatible. Please use Chrome.'">
+<!doctype html>
+<html>
   <head>
     <title>TetrisPad</title>
+    <link rel="shortcut icon" href="assets/favicon.png">
   </head>
 
   <body>
@@ -24,6 +26,13 @@
 
 
     <!-- Le scripts -->
+    <script>
+      // Minimal setup and fallback
+      var prompt = document.getElementById('prompt')
+      window.onerror = function() {
+        prompt.textContent = 'Ouch! Your browser is not compatible. Please use Chrome.';
+      };
+    </script>
     <script src="scripts/Launchpad.js"></script>
     <script src="scripts/Grid.js"></script>
     <script src="scripts/Game.js"></script>
@@ -31,28 +40,49 @@
     <script>
       var myLaunchpad = new Launchpad(),
           myController = new Controller(),
-          prompt = document.getElementById('prompt'),
           theGame
 
-      myLaunchpad
-        .accessDevice()
-        .then(() => {
-          myController.addLaunchpad(myLaunchpad)
-          theGame = new Game(
-            new Grid(myLaunchpad, 8, 8),
-            myController,
-            800
-          )
-          prompt.textContent = 'Press enter to start'
-          myController.onKey(e => {
-            if (e.start)
-              theGame.start()
-              prompt.textContent = 'GO!'
+      // Setup sequence
+      function setup () {
+        myLaunchpad
+          .accessDevice()
+          .then(() => {
+            myController.addLaunchpad(myLaunchpad)
+            theGame = new Game(
+              new Grid(myLaunchpad, 8, 8),
+              myController,
+              800
+            )
+            prompt.textContent = 'Press enter to start'
+          },
+          () => {
+            prompt.textContent = 'Cannot find your Launchpad. Please plug it and press enter.'
           })
-        },
-        () => {
-          prompt.textContent = 'Cannot find your Launchpad. Please plug it and refresh.'
-        })
+      }
+
+      // Listen for user input
+      myController.onKey(e => {
+        if (!e.start)
+          return
+
+        if (theGame) {
+          theGame.start()
+          prompt.textContent = 'GO!'
+        }
+        else {
+          setup()
+        }
+      })
+
+      // GO!
+      setup();
+
+
+
+      // Back to normal
+      window.onerror = (e) => {
+        prompt.textContent = 'Somethin bad happen. JavaScript dropped the mic.'
+      }
     </script>
 
     <style>
@@ -93,8 +123,6 @@
           flex-direction: column;
         }
       }
-
-
     </style>
   </body>
 </html>
