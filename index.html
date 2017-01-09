@@ -27,7 +27,7 @@
 
     <!-- Le scripts -->
     <script>
-      // Minimal setup and fallback
+      // Minimal setup and cheap ES6 detection error
       var prompt = document.getElementById('prompt')
       window.onerror = function() {
         prompt.textContent = 'Ouch! Your browser is not compatible. Please use Chrome.';
@@ -49,7 +49,6 @@
           .then(() => {
             myController.addLaunchpad(myLaunchpad)
             theGame = new Game(
-              new Grid(myLaunchpad, 8, 8),
               myController,
               800
             )
@@ -66,8 +65,10 @@
           return
 
         if (theGame) {
+          theGame.stop();
+          theGame.init()
           theGame.start()
-          prompt.textContent = 'GO!'
+          prompt.textContent = 'GO! (press enter to reset)'
         }
         else {
           setup()
@@ -109,8 +110,11 @@
       .intro, .info {
         margin: 1rem;
       }
+      .intro {
+        max-width: 350px;
+      }
       .intro img {
-        width: 50%;
+        width: 65%;
       }
       .prompt {
         color: #21252B;
