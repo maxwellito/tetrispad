@@ -9,17 +9,25 @@ class Game {
 
   /**
    * Init
-   * @param  {Grid} grid             Grid to output
    * @param  {Controller} controller Command input
    * @param  {Number} interval       Interval between actions in ms
    */
-  constructor (grid, controller, interval) {
-    this.grid = grid
+  constructor (controller, interval) {
     this.controller = controller
     this.interval = interval
 
+    this.controller.onKey(this.keyListener.bind(this))
+  }
+
+  /**
+   * Setup the Game from clear
+   * Good first first run and reset
+   */
+  init () {
+    this.grid = new Grid(myLaunchpad, 8, 8)
     this.countPreviousMove = null
     this.countCurrentMove = 0
+    this.status = Game.STATUS_READY
 
     this.currentBlock = null
     this.currentGrid = this.grid.getSplittedBinaryData()
@@ -35,7 +43,6 @@ class Game {
   start () {
     this.grid.clear(Launchpad.LED_OFF)
     this.pickNewBlock()
-    this.controller.onKey(this.keyListener.bind(this))
     this.play()
   }
 
@@ -46,6 +53,7 @@ class Game {
     if (this.timer) {
       this.stop()
       this.grid.suspendDisplay()
+      this.status = Game.STATUS_PAUSE
     }
     else {
       this.play()
@@ -75,6 +83,7 @@ class Game {
         })
     }
     liner()
+    this.status = Game.STATUS_END
   }
 
   /**
@@ -91,6 +100,7 @@ class Game {
     this.timer = setInterval(() => {
       this.increment()
     }, this.interval)
+    this.status = Game.STATUS_PLAY
   }
 
   /**
@@ -120,6 +130,8 @@ class Game {
    */
   keyListener (e) {
     switch (true) {
+    case !this.currentBlock:
+      return
     case !!e.move:
       return this.moveBlock(e.move)
     case !!e.rotate:
@@ -436,3 +448,8 @@ class Game {
     })
   }
 }
+
+Game.STATUS_READY   = 0b0000
+Game.STATUS_PLAY    = 0b0001
+Game.STATUS_PAUSE   = 0b0010
+Game.STATUS_END     = 0b0011
