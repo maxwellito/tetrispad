@@ -20,7 +20,7 @@
         <p><span class="pre">Any other Launchpad key</span>, <span class="pre">spacebar</span><br/>Pause the game</p>
       </div>
       <div>
-        <p><small>This experiment require a modern browser, like Chrome.</small></p>
+        <p><small>This experiment require a modern browser, like Chrome.<br/>Hack it on <a href="https://github.com/maxwellito/tetrispad">GitHub</a></small></p>
       </div>
     </div>
 
@@ -42,7 +42,13 @@
           myController = new Controller(),
           theGame
 
-      navigator.requestMIDIAccess({sysex:true})
+      // Ask MIDI API access
+      navigator
+        .permissions.query({name:'geolocation'})
+        .then(e => {
+          if (e.state !== 'granted')
+            navigator.requestMIDIAccess({sysex:true})
+        })
 
       // Setup sequence
       function setup () {
@@ -81,7 +87,6 @@
       setup();
 
 
-
       // Back to normal
       window.onerror = (e) => {
         prompt.textContent = 'Somethin bad happen. JavaScript dropped the mic.'
@@ -99,6 +104,9 @@
       body {
         display: flex;
         max-width: 1000px;
+      }
+      a {
+        color: inherit;
       }
       p {
         line-height: 1.5;
