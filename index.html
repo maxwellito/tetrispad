@@ -42,6 +42,8 @@
           myController = new Controller(),
           theGame
 
+      navigator.requestMIDIAccess({sysex:true})
+
       // Setup sequence
       function setup () {
         myLaunchpad
