@@ -3,6 +3,8 @@
   <head>
     <title>TetrisPad</title>
     <link rel="shortcut icon" href="assets/favicon.png">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0" />
+    <meta name="theme-color" content="#21252B">
   </head>
 
   <body>
@@ -60,10 +62,10 @@
               myController,
               800
             )
-            prompt.textContent = 'Press enter to start'
+            prompt.textContent = 'Press enter (or the yellow key) to start'
           },
           () => {
-            prompt.textContent = 'Cannot find your Launchpad. Please plug it and press enter.'
+            prompt.textContent = 'Cannot find your Launchpad. Please plug it and press enter (or refresh).'
           })
       }
 
@@ -76,7 +78,7 @@
           theGame.stop();
           theGame.init()
           theGame.start()
-          prompt.textContent = 'GO! (press enter to reset)'
+          prompt.textContent = 'GO! (press enter/yellow key to reset)'
         }
         else {
           setup()

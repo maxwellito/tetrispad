@@ -76,6 +76,7 @@ Controller.KEYS = {
 }
 
 Controller.LAUNCHPAD_KEYS = {
+  8: {start: true},
   112: {move: 'left'},
   114: {move: 'down'},
   113: {move: 'right'},
