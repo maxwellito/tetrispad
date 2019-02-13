@@ -24,7 +24,7 @@ class Launchpad {
    * @param  {[type]} deviceName 'Launchpad Mini' [description]
    * @return {[type]}            [description]
    */
-  constructor (deviceName = 'Launchpad S') {
+  constructor (deviceName = 'Launchpad') {
     this.deviceName = deviceName
     this.input = null
     this.output = null
