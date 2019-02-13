@@ -24,7 +24,7 @@ class Launchpad {
    * @param  {[type]} deviceName 'Launchpad Mini' [description]
    * @return {[type]}            [description]
    */
-  constructor (deviceName = 'Launchpad') {
+  constructor (deviceName = 'Launchpad S') {
     this.deviceName = deviceName
     this.input = null
     this.output = null
@@ -60,18 +60,24 @@ class Launchpad {
             inputs  = Array.from(access.inputs.values()),
             outputs = Array.from(access.outputs.values())
 
-        for (i = 0; i < inputs.length; i++) {
+        for (i = 0; i < inputs.length; i++)
+        {
           input = inputs[i]
-          output = outputs[i]
-          if (input.type === 'input'  && ~input.name.indexOf(this.deviceName) &&
-              output.type === 'output' && ~output.name.indexOf(this.deviceName)) {
+          if (input.type === 'input'  && ~input.name.indexOf(this.deviceName)) {
             this.input  = input
-            this.output = output
             this.input.onmidimessage = e => {
               this.listeners.forEach(listener => {
                 listener && listener(e.data)
               })
             }
+          }
+        }
+        
+        for (i = 0; i < outputs.length; i++)
+        {
+          output = outputs[i]
+          if (output.type === 'output' && ~output.name.indexOf(this.deviceName)) {
+            this.output = output
             return this
           }
         }
