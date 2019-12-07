@@ -1,6 +1,6 @@
 # TetrisPad
 
-Plug your Novation Launchpad and [PLAY!](http://maxwellito.github.io/tetrispad/)
+Plug your Novation Launchpad and [PLAY!](http://lucian2599.github.io/tetrispad/)
 
 Single page app using the WebMIDI API to use the [Novation Launchpad](https://global.novationmusic.com/launch/launchpad-mini) as a screen for a Tetris.
 
